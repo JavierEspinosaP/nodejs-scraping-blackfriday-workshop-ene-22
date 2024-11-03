@@ -16,14 +16,12 @@ const extractProductData = async (url,browser) => {
         // Utilizamos el método newPage.$eval(selector, function) y almacenamos en productData:
 
         /********** A RELLENAR todos los page.$eval(selector, function)  *********/
-        //titulo --> .productTitle
-        productData['name'] = await page.$eval(".productTitle", name => name.innerHTML)
-        //precio --> #normalpricenumber
-        productData['price'] = await page.$eval("#normalpricenumber", price => price.innerHTML)
+        //titulo --> h1
+        productData['name'] = await page.$eval("h1", name => name.innerHTML)
+        //precio --> div.product-details-prices > div > span
+        productData['price'] = await page.$eval("div.product-details-prices > div > span", price => price.innerHTML)
         //imagenes --> document.querySelector("#productmainimageitem").src
-        productData['img'] = await page.$eval("#productmainimageitem", img => img.src)
-        //info --> 
-        productData['info'] = await page.$eval("div.productdetailinfocontainer.smoothshadow > h2", info => info.innerHTML)
+        productData['img'] = await page.$eval("figure > img", img => img.src)[0]
         //descripción
         productData['description'] = await page.$eval('.productdetailinfocontainer', description=>description.innerText.slice(0,200) + '...')
         
@@ -58,7 +56,7 @@ const scrap = async (url) => {
 
         /********** A RELLENAR page.$eval(selector, function)  *********/
         // Lista de nodos <a> --> convertirlo a una lista de href --> array de links
-        const tmpurls = await page.$$eval("div.productName > div > div > a", data => data.map(a=>a.href))
+        const tmpurls = await page.$$eval("article > figure > a", data => data.map(a=>a.href))
         
         //Quitamos los duplicados
         const urls = await tmpurls.filter((link,index) =>{ return tmpurls.indexOf(link) === index})
